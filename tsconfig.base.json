@@ -19,8 +19,8 @@
     "customConditions": ["@workspace/source"],
     "baseUrl": ".",
     "paths": {
-      "@url-shortener/drizzle-node-pg": ["libs/drizzle-node-pg/src/index.ts"],
-      "@url-shortener/logger": ["libs/logger/src/index.ts"]
+      "@workspace/drizzle-node-pg": ["libs/drizzle-node-pg/src/index.ts"],
+      "@workspace/logger": ["libs/logger/src/index.ts"]
     }
   }
 }
