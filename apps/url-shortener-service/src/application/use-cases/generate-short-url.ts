@@ -12,7 +12,7 @@ class GenerateShortUrlUseCase {
         private readonly counterRepository: CounterRepository,
     ) {}
 
-    async execute(originalUrl: string): Promise<string> {
+    async execute(url: string): Promise<string> {
         const nextValue = await this.counterRepository.getNextValue();
 
         const shortUrlCode = this.generateBase62Code(nextValue);
@@ -22,7 +22,7 @@ class GenerateShortUrlUseCase {
         const shortUrl = new ShortUrl(
             randomUUID(),
             shortUrlCode,
-            originalUrl,
+            url,
             expiresAt,
             new Date(),
             new Date(),
@@ -39,6 +39,7 @@ class GenerateShortUrlUseCase {
 
         while (counter % 62 > 0) {
             code += (counter % 62).toString(62);
+            
             counter = Math.floor(counter / 62);
         }
 
