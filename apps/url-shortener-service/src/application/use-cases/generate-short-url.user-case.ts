@@ -6,6 +6,8 @@ import { ShortUrl } from '../../domain/entities/short-url';
 
 const { SHORT_URL_HOST, EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30 } = process.env;
 
+const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
 class GenerateShortUrlUseCase {
     constructor(
         private readonly shortUrlRepository: ShortUrlRepository,
@@ -35,10 +37,12 @@ class GenerateShortUrlUseCase {
     }
 
     private generateBase62Code(counter: number): string {
+        if (counter === 0) return BASE62[0];
+
         let code = '';
 
-        while (counter % 62 > 0) {
-            code += (counter % 62).toString(62);
+        while (counter > 0) {
+            code = BASE62[counter % 62] + code;
             
             counter = Math.floor(counter / 62);
         }

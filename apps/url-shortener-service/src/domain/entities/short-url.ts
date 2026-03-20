@@ -8,8 +8,8 @@ class ShortUrl {
     public readonly updatedAt: Date,
     public readonly deletedAt: Date | null
   ) {
-    if (code.length !== 7) {
-      throw new Error('Code must be 7 characters long');
+    if (code.length > 7) {
+      throw new Error('Code must be less than 7 characters long');
     }
 
     if (!url.startsWith('https')) {
