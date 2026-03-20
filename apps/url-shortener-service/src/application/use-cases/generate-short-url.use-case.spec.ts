@@ -1,11 +1,10 @@
-import test from "node:test";
-import assert from "node:assert/strict";
-
 import type { CounterRepository } from "../ports/counter.repository";
 import type { ShortUrlCacheRepository } from "../ports/short-url-cache.repository";
 import type { ShortUrlRepository } from "../ports/short-url.repository";
 import type { ShortUrl } from "../../domain/entities/short-url";
 
+import test from "node:test";
+import assert from "node:assert/strict";
 import { GenerateShortUrlUseCase } from "./generate-short-url.user-case";
 
 test("GenerateShortUrlUseCase creates and caches short url", async () => {
