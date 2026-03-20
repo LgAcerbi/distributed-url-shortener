@@ -1,15 +1,19 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "types": ["node"],
-    "rootDir": "../../",
-    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
-  },
-  "include": [
-    "src/**/*.ts",
-    "../../libs/entities/src/**/*.ts",
-    "../../libs/ports/src/**/*.ts"
-  ],
-  "exclude": ["eslint.config.js", "eslint.config.cjs", "eslint.config.mjs"]
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "types": ["node"],
+        "rootDir": "../../",
+        "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["eslint.config.js", "eslint.config.cjs", "eslint.config.mjs"],
+    "references": [
+        {
+            "path": "../../libs/drizzle-node-pg/tsconfig.lib.json"
+        },
+        {
+            "path": "../../libs/logger/tsconfig.lib.json"
+        }
+    ]
 }
