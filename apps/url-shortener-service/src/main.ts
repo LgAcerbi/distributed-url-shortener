@@ -3,7 +3,7 @@ import { logger } from "@workspace/logger"
 import { compose } from "./compositor"
 
 async function main() {
-    const { DATABASE_URL, REDIS_WRITE_URL, REDIS_CONNECT_TIMEOUT_MS, REDIS_MAX_RECONNECT_DELAY_MS, PORT = 80 } = process.env
+    const { DATABASE_URL, REDIS_WRITE_URL, REDIS_CONNECT_TIMEOUT_MS, REDIS_MAX_RECONNECT_DELAY_MS, HOST = "0.0.0.0", PORT = 80 } = process.env
 
     if (!DATABASE_URL) {
         throw new Error("DATABASE_URL is required")
@@ -22,7 +22,7 @@ async function main() {
         httpServerPort: port,
     })
 
-    server.listen({ port }, (err, address) => {
+    server.listen({ port, host: HOST }, (err, address) => {
         if (err) {
             server.log.error(err)
             process.exit(1)
