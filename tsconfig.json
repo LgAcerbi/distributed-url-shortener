@@ -1,16 +1,16 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compileOnSave": false,
-  "files": [],
-  "references": [
-    {
-      "path": "./apps/url-shortener-service"
-    },
-    {
-      "path": "./libs/entities"
-    },
-    {
-      "path": "./libs/ports"
-    }
-  ]
+    "extends": "./tsconfig.base.json",
+    "compileOnSave": false,
+    "files": [],
+    "references": [
+        {
+            "path": "./apps/url-shortener-service"
+        },
+        {
+            "path": "./libs/drizzle-node-pg"
+        },
+        {
+            "path": "./libs/logger"
+        }
+    ]
 }
