@@ -21,7 +21,7 @@ class RedisShortUrlCacheRepository implements ShortUrlCacheRepository {
         url: string,
         expirationTime: number,
     ): Promise<void> {
-        await this.redisClient.setex(code, expirationTime, url);
+        await this.redisClient.setEx(code, expirationTime, url);
     }
 }
 
