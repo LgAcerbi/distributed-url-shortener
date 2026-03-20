@@ -11,32 +11,30 @@ import {
 } from './adapters';
 import { GenerateShortUrlUseCase } from './application';
 
-const {
-    DATABASE_URL,
-    PORT = 80,
-    REDIS_WRITE_URL,
-    REDIS_READ_URL,
-    REDIS_CONNECT_TIMEOUT_MS,
-    REDIS_MAX_RECONNECT_DELAY_MS,
-} = process.env;
-
-async function compose() {
-    const pgClient = new NodePgDrizzleClient(DATABASE_URL ?? '', shortUrlDbSchema);
+async function compose({
+    databaseUrl,
+    redisWriteUrl,
+    redisConnectTimeoutMs = undefined,
+    redisMaxReconnectDelayMs = undefined,
+    httpServerPort = 80,
+}: {
+    databaseUrl: string;
+    redisWriteUrl: string;
+    redisConnectTimeoutMs?: number;
+    redisMaxReconnectDelayMs?: number;
+    httpServerPort: number;
+}) {
+    const pgClient = new NodePgDrizzleClient(databaseUrl, shortUrlDbSchema);
     const dbInstance = pgClient.getDbInstance();
 
     const redisClient = new RedisNodeClient({
-        writeUrl: REDIS_WRITE_URL ?? '',
-        readUrl: REDIS_READ_URL,
-        connectTimeoutMs: REDIS_CONNECT_TIMEOUT_MS
-            ? Number(REDIS_CONNECT_TIMEOUT_MS)
-            : undefined,
-        maxReconnectDelayMs: REDIS_MAX_RECONNECT_DELAY_MS
-            ? Number(REDIS_MAX_RECONNECT_DELAY_MS)
-            : undefined,
+        writeUrl: redisWriteUrl,
+        connectTimeoutMs: redisConnectTimeoutMs,
+        maxReconnectDelayMs: redisMaxReconnectDelayMs,
     });
     await redisClient.connect();
 
-    const httpServer = await createHttpServer(Number(PORT));
+    const httpServer = await createHttpServer(httpServerPort);
 
     const shortUrlRepository = new PostgresShortUrlRepository(dbInstance);
     const counterRepository: CounterRepository = new RedisCounterRepository(
