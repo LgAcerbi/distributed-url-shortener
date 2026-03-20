@@ -20,7 +20,9 @@
     "baseUrl": ".",
     "paths": {
       "@workspace/drizzle-node-pg": ["libs/drizzle-node-pg/src/index.ts"],
-      "@workspace/logger": ["libs/logger/src/index.ts"]
+      "@workspace/logger": ["libs/logger/src/index.ts"],
+      "drizzle-orm": ["node_modules/drizzle-orm"],
+      "drizzle-orm/*": ["node_modules/drizzle-orm/*"]
     }
   }
 }
