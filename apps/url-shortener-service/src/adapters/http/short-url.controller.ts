@@ -1,5 +1,8 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import type { GenerateShortUrlUseCase, GetUrlByCodeUseCase } from '../../application';
+import type {
+    GenerateShortUrlUseCase,
+    GetUrlByCodeUseCase,
+} from '../../application';
 import type { createHttpServer } from './server';
 
 class HttpShortUrlController {
