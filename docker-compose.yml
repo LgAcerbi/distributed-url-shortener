@@ -45,6 +45,31 @@ services:
       retries: 10
       start_period: 15s
 
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    ports:
+      - '${KAFKA_PORT:-9092}:9092'
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    healthcheck:
+      test: ['CMD-SHELL', 'kafka-topics --bootstrap-server localhost:9092 --list']
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
   adminer:
     image: adminer:4
     depends_on:
@@ -74,6 +99,7 @@ services:
       ZOOKEEPER_COUNTER_LEASE_MAX_RETRIES: ${ZOOKEEPER_COUNTER_LEASE_MAX_RETRIES:-12}
       ZOOKEEPER_COUNTER_LEASE_BACKOFF_MS: ${ZOOKEEPER_COUNTER_LEASE_BACKOFF_MS:-5}
       SHORT_URL_HOST: ${SHORT_URL_HOST:-http://localhost:80}
+      KAFKA_BROKERS: ${KAFKA_BROKERS:-kafka:9092}
     ports:
       - '${API_PORT:-80}:${API_PORT:-80}'
     depends_on:
@@ -82,6 +108,23 @@ services:
       redis:
         condition: service_healthy
       zookeeper:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  url-usage-service:
+    build:
+      context: .
+      dockerfile: apps/url-usage-service/Dockerfile
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/urlshortener}
+      KAFKA_BROKERS: ${KAFKA_BROKERS:-kafka:9092}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
         condition: service_healthy
 
 volumes:
