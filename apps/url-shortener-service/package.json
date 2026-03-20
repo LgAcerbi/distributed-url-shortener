@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@workspace/logger": "0.0.1",
-    "@workspace/drizzle-node-pg": "0.0.1"
+    "@workspace/drizzle-node-pg": "0.0.1",
+    "@workspace/redis-node": "0.0.1"
   }
 }
