@@ -45,7 +45,7 @@ class HttpShortUrlController {
 
         this.server.route({
             method: 'GET',
-            url: '/short-url/:code',
+            url: '/:code',
             schema: {
                 params: {
                     type: 'object',
