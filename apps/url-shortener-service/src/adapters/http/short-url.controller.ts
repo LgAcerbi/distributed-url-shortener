@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import type { GenerateShortUrlUseCase } from '../../application/use-cases/generate-short-url';
+import type { GenerateShortUrlUseCase } from '../../application/use-cases/generate-short-url.user-case';
 
-class ShortUrlController {
+class HttpShortUrlController {
     constructor(
         private readonly server: FastifyInstance,
         private readonly generateShortUrlUseCase: GenerateShortUrlUseCase,
@@ -31,7 +31,7 @@ class ShortUrlController {
                     },
                 },
             },
-            handler: async (request: FastifyRequest, reply: FastifyReply) => {
+            handler: async (request: FastifyRequest<{ Body: { url: string } }>, reply: FastifyReply) => {
                 const { url } = request.body;
 
                 const shortUrl =
@@ -43,5 +43,5 @@ class ShortUrlController {
     }
 }
 
-export default ShortUrlController;
-export { ShortUrlController };
+export default HttpShortUrlController;
+export { HttpShortUrlController };
