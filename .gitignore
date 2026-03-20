@@ -5,6 +5,9 @@ dist
 tmp
 out-tsc
 
+# Local environment (copy from .env.example)
+.env
+
 # dependencies
 node_modules
 

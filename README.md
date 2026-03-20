@@ -24,6 +24,56 @@
 
 ---
 
+## Docker Compose (Postgres, Redis, Adminer, API)
+
+Local stack runs **PostgreSQL**, **Redis**, **Adminer**, and the **api** service on one Compose network.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) with Compose v2
+
+### Setup
+
+1. Copy environment template and adjust if needed:
+
+   ```sh
+   cp .env.example .env
+   ```
+
+2. Start everything (builds the API image from the root `Dockerfile`):
+
+   ```sh
+   docker compose up --build
+   ```
+
+### URLs & ports (defaults)
+
+| Service    | URL / connection |
+| ---------- | ---------------- |
+| API        | `http://localhost:3000` (override host port with `API_PORT` in `.env`) |
+| Adminer    | `http://localhost:8080` |
+| PostgreSQL | `localhost:5432` (user/password/db from `.env`) |
+| Redis      | `localhost:6379` |
+
+### Adminer
+
+1. Open `http://localhost:8080`
+2. **System:** PostgreSQL  
+3. **Server:** `postgres` (Docker Compose service name)  
+4. **Username / Password / Database:** match `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` in `.env`
+
+### API configuration
+
+Inside Compose, the API receives:
+
+- `DATABASE_URL` — e.g. `postgresql://…@postgres:5432/…`
+- `REDIS_URL` — e.g. `redis://redis:6379`
+- `HOST` / `PORT` — defaults `0.0.0.0` / `3000` inside the container
+
+The multi-stage root **`Dockerfile`** runs `nx build` + `nx prune` for `@workspace/api` so `docker compose build api` does not require a local `dist` folder.
+
+---
+
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
 ✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.

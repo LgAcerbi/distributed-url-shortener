@@ -1,0 +1,30 @@
+# Dependencies & build outputs
+node_modules
+**/node_modules
+**/dist
+tmp
+out-tsc
+coverage
+
+# Git & VCS
+.git
+.gitignore
+
+# Nx cache (always rebuild inside Docker)
+.nx/cache
+.nx/workspace-data
+
+# Env & local secrets
+.env
+.env.*
+!.env.example
+
+# IDE & OS
+.idea
+.vscode
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+.claude
