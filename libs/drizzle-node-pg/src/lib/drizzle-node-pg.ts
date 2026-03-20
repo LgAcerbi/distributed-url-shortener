@@ -38,3 +38,4 @@ function createNodePgDrizzleClient<TSchema extends Schema>(
 }
 
 export { createNodePgDrizzleClient, NodePgDrizzleClient };
+export type { NodePgDatabase };
