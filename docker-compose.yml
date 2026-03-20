@@ -34,6 +34,17 @@ services:
       retries: 5
       start_period: 5s
 
+  zookeeper:
+    image: zookeeper:3.9
+    ports:
+      - '${ZOOKEEPER_PORT:-2181}:2181'
+    healthcheck:
+      test: ['CMD-SHELL', 'echo ruok | nc -w 2 127.0.0.1 2181 | grep imok']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
   adminer:
     image: adminer:4
     depends_on:
@@ -56,6 +67,12 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/urlshortener}
       REDIS_WRITE_URL: ${REDIS_WRITE_URL:-redis://redis:6379}
       REDIS_READ_URL: ${REDIS_READ_URL:-redis://redis:6379}
+      COUNTER_BACKEND: ${COUNTER_BACKEND:-redis}
+      ZOOKEEPER_URL: ${ZOOKEEPER_URL:-zookeeper:2181}
+      ZOOKEEPER_COUNTER_RANGE_SIZE: ${ZOOKEEPER_COUNTER_RANGE_SIZE:-10000}
+      ZOOKEEPER_COUNTER_PREFETCH_PERCENT: ${ZOOKEEPER_COUNTER_PREFETCH_PERCENT:-20}
+      ZOOKEEPER_COUNTER_LEASE_MAX_RETRIES: ${ZOOKEEPER_COUNTER_LEASE_MAX_RETRIES:-12}
+      ZOOKEEPER_COUNTER_LEASE_BACKOFF_MS: ${ZOOKEEPER_COUNTER_LEASE_BACKOFF_MS:-5}
       SHORT_URL_HOST: ${SHORT_URL_HOST:-http://localhost:80}
     ports:
       - '${API_PORT:-80}:${API_PORT:-80}'
@@ -63,6 +80,8 @@ services:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      zookeeper:
         condition: service_healthy
 
 volumes:

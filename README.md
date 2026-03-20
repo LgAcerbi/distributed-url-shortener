@@ -69,8 +69,20 @@ PostgreSQL schema initialization runs automatically from `docker/postgres/init` 
 Inside Compose, the API receives:
 
 - `DATABASE_URL` — e.g. `postgresql://…@postgres:5432/…`
-- `REDIS_URL` — e.g. `redis://redis:6379`
+- `REDIS_WRITE_URL` / `REDIS_READ_URL` — e.g. `redis://redis:6379`
+- `COUNTER_BACKEND` — `redis` or `zookeeper`
+- `ZOOKEEPER_URL` — e.g. `zookeeper:2181` (required only for `COUNTER_BACKEND=zookeeper`)
+- `ZOOKEEPER_COUNTER_RANGE_SIZE` — lease size per counter block (default `10000`)
+- `ZOOKEEPER_COUNTER_PREFETCH_PERCENT` — prefetch threshold (default `20`)
+- `ZOOKEEPER_COUNTER_LEASE_MAX_RETRIES` / `ZOOKEEPER_COUNTER_LEASE_BACKOFF_MS` — lease conflict retry controls
 - `HOST` / `PORT` — defaults `0.0.0.0` / `3000` inside the container
+
+### Throughput tuning for 100M/day
+
+- Start with `COUNTER_BACKEND=zookeeper` and `ZOOKEEPER_COUNTER_RANGE_SIZE=10000`.
+- Increase `ZOOKEEPER_COUNTER_RANGE_SIZE` (e.g. `50000`) if lease contention or ZooKeeper write pressure rises.
+- Keep `ZOOKEEPER_COUNTER_PREFETCH_PERCENT` between `15-30` to avoid lease stalls near block exhaustion.
+- Rollout with one canary replica first, then expand while monitoring p99 create latency and lease retry rate.
 
 The multi-stage root **`Dockerfile`** runs `nx build` + `nx prune` for **`url-shortener-service`** so `docker compose build url-shortener-service` does not require a local `dist` folder.
 
