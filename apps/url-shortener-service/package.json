@@ -7,6 +7,7 @@
     "@fastify/swagger": "^9.5.2",
     "@fastify/swagger-ui": "^5.2.3",
     "@workspace/drizzle-node-pg": "0.0.1",
+    "@workspace/kafka-node": "0.0.1",
     "@workspace/logger": "0.0.1",
     "@workspace/redis-node": "0.0.1",
     "dotenv": "^17.2.3",
