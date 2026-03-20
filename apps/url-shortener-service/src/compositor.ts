@@ -1,4 +1,5 @@
 import { NodePgDrizzleClient } from '@workspace/drizzle-node-pg';
+import { KafkaNodeClient } from '@workspace/kafka-node';
 import { RedisNodeClient } from '@workspace/redis-node';
 import {
     createHttpServer,
@@ -8,8 +9,13 @@ import {
     RedisShortUrlCacheRepository,
     ZookeeperCounterRepository,
     createZookeeperClient,
+    KafkaClickEventPublisher,
 } from './adapters';
-import { GenerateShortUrlUseCase, GetUrlByCodeUseCase } from './application';
+import {
+    GenerateShortUrlUseCase,
+    GetUrlByCodeUseCase,
+    PublishShortUrlClickUseCase,
+} from './application';
 
 async function compose({
     httpServerPort,
@@ -17,6 +23,7 @@ async function compose({
     redisWriteUrl,
     redisReadUrl,
     zookeeperUrl,
+    kafkaBrokers,
     zookeeperSessionTimeoutMs = undefined,
     redisConnectTimeoutMs = undefined,
     redisMaxReconnectDelayMs = undefined,
@@ -26,6 +33,7 @@ async function compose({
     redisWriteUrl: string;
     redisReadUrl: string;
     zookeeperUrl: string;
+    kafkaBrokers: string[];
     zookeeperSessionTimeoutMs?: number;
     redisConnectTimeoutMs?: number;
     redisMaxReconnectDelayMs?: number;
@@ -44,6 +52,12 @@ async function compose({
     const redisWriteClient = redisClient.getWriteClient();
 
     const httpServer = await createHttpServer(httpServerPort);
+    const kafkaNodeClient = new KafkaNodeClient({
+        clientId: 'url-shortener-service',
+        brokers: kafkaBrokers,
+    });
+    const clickEventProducer = kafkaNodeClient.getProducer();
+    await clickEventProducer.connect();
 
     const shortUrlRepository = new PostgresShortUrlRepository(dbInstance);
     const shortUrlCacheRepository = new RedisShortUrlCacheRepository(
@@ -55,6 +69,7 @@ async function compose({
         sessionTimeout: zookeeperSessionTimeoutMs,
     });
     const counterRepository = new ZookeeperCounterRepository(zookeeperClient);
+    const clickEventPublisher = new KafkaClickEventPublisher(clickEventProducer);
 
     const generateShortUrlUseCase = new GenerateShortUrlUseCase(
         shortUrlRepository,
@@ -62,9 +77,12 @@ async function compose({
         shortUrlCacheRepository,
     );
 
+    const publishShortUrlClickUseCase = new PublishShortUrlClickUseCase(clickEventPublisher);
+
     const getUrlByCodeUseCase = new GetUrlByCodeUseCase(
         shortUrlRepository,
         shortUrlCacheRepository,
+        publishShortUrlClickUseCase,
     );
 
     const httpShortUrlController = new HttpShortUrlController(

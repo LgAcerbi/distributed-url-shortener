@@ -8,6 +8,7 @@ async function main() {
         REDIS_WRITE_URL,
         REDIS_READ_URL,
         ZOOKEEPER_URL,
+        KAFKA_BROKERS,
         ZOOKEEPER_COUNTER_RANGE_SIZE,
         ZOOKEEPER_COUNTER_PREFETCH_PERCENT,
         ZOOKEEPER_COUNTER_LEASE_MAX_RETRIES,
@@ -34,6 +35,10 @@ async function main() {
     if (!ZOOKEEPER_URL) {
         throw new Error("ZOOKEEPER_URL is required")
     }
+    
+    if (!KAFKA_BROKERS) {
+        throw new Error("KAFKA_BROKERS is required")
+    }
 
     const rangeSize = ZOOKEEPER_COUNTER_RANGE_SIZE ? Number(ZOOKEEPER_COUNTER_RANGE_SIZE) : 10_000
     const prefetchPercent = ZOOKEEPER_COUNTER_PREFETCH_PERCENT ? Number(ZOOKEEPER_COUNTER_PREFETCH_PERCENT) : 20
@@ -57,12 +62,18 @@ async function main() {
     }
 
     const port = Number(PORT)
+    const kafkaBrokers = KAFKA_BROKERS.split(",").map((broker) => broker.trim()).filter(Boolean)
+
+    if (kafkaBrokers.length === 0) {
+        throw new Error("KAFKA_BROKERS must include at least one broker")
+    }
 
     const server = await compose({
         databaseUrl: DATABASE_URL,
         redisWriteUrl: REDIS_WRITE_URL,
         redisReadUrl: REDIS_READ_URL,
         zookeeperUrl: ZOOKEEPER_URL,
+        kafkaBrokers,
         redisConnectTimeoutMs: REDIS_CONNECT_TIMEOUT_MS ? Number(REDIS_CONNECT_TIMEOUT_MS) : undefined,
         redisMaxReconnectDelayMs: REDIS_MAX_RECONNECT_DELAY_MS ? Number(REDIS_MAX_RECONNECT_DELAY_MS) : undefined,
         zookeeperSessionTimeoutMs: ZOOKEEPER_SESSION_TIMEOUT_MS ? Number(ZOOKEEPER_SESSION_TIMEOUT_MS) : undefined,
