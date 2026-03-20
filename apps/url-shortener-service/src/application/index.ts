@@ -1,3 +1,5 @@
 export * from "./use-cases/generate-short-url.user-case"
+export * from "./use-cases/get-url-by-code.use-case"
 export * from "./ports/short-url.repository"
 export * from "./ports/counter.repository"
+export * from "./ports/short-url-cache.repository"
