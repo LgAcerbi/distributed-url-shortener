@@ -1,5 +1,5 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
 # Node / TypeScript Services — Clean Architecture Guidelines
 
