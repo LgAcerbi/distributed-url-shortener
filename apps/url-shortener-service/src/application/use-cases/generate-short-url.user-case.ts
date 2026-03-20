@@ -1,10 +1,11 @@
 import type { ShortUrlRepository } from '../ports/short-url.repository';
+import type { ShortUrlCacheRepository } from '../ports/short-url-cache.repository';
 import type { CounterRepository } from '../ports/counter.repository';
 
 import { randomUUID } from 'node:crypto';
 import { ShortUrl } from '../../domain/entities/short-url';
 
-const { SHORT_URL_HOST, EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30 } = process.env;
+const { SHORT_URL_HOST, EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30, CACHE_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30 } = process.env;
 
 const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -12,6 +13,7 @@ class GenerateShortUrlUseCase {
     constructor(
         private readonly shortUrlRepository: ShortUrlRepository,
         private readonly counterRepository: CounterRepository,
+        private readonly shortUrlCacheRepository: ShortUrlCacheRepository,
     ) {}
 
     async execute(url: string): Promise<string> {
@@ -32,6 +34,8 @@ class GenerateShortUrlUseCase {
         );
 
         await this.shortUrlRepository.create(shortUrl);
+
+        await this.shortUrlCacheRepository.setCachedUrlByCode(shortUrl.getCode(), shortUrl.getUrl(), Number(CACHE_EXPIRATION_TIME));
 
         return `${SHORT_URL_HOST}/${shortUrl.getCode()}`;
     }
