@@ -17,6 +17,12 @@
         },
         {
             "path": "./libs/errors"
+        },
+        {
+            "path": "./libs/kafka-node"
+        },
+        {
+            "path": "./apps/url-usage-service"
         }
     ]
 }
