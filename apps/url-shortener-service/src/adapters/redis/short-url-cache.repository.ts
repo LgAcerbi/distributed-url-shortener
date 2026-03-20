@@ -3,11 +3,12 @@ import type { ShortUrlCacheRepository } from '../../application';
 
 class RedisShortUrlCacheRepository implements ShortUrlCacheRepository {
     constructor(
-        private readonly redisClient: ReturnType<typeof createClient>,
+        private readonly readClient: ReturnType<typeof createClient>,
+        private readonly writeClient: ReturnType<typeof createClient>
     ) {}
 
     async getCachedUrlByCode(code: string): Promise<string | null> {
-        const cachedUrl = await this.redisClient.get(code);
+        const cachedUrl = await this.readClient.get(code);
 
         if (!cachedUrl) {
             return null;
@@ -21,7 +22,7 @@ class RedisShortUrlCacheRepository implements ShortUrlCacheRepository {
         url: string,
         expirationTime: number,
     ): Promise<void> {
-        await this.redisClient.setEx(code, expirationTime, url);
+        await this.writeClient.setEx(code, expirationTime, url);
     }
 }
 
