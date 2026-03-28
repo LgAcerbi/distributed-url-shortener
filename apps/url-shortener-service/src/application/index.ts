@@ -1,4 +1,4 @@
-export * from "./use-cases/generate-short-url.user-case"
+export * from "./use-cases/generate-short-url.use-case"
 export * from "./use-cases/get-url-by-code.use-case"
 export * from "./use-cases/publish-short-url-click.use-case"
 export * from "./ports/short-url.repository"
